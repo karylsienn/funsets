@@ -96,7 +96,34 @@ class FunSetSuite extends munit.FunSuite:
       assert(contains(s, 6) && !contains(sf, 6), "Does not contain 6")
   }
 
-  
+  test("forall checks the conditions for all set elements") {
+    new TestSets:
+      val sp = (x: Int) => (x > 0) // Set of all positive numbers
+      val sn = (x: Int) => true // Set of all integers
+      val ss = union(union(singletonSet(3), singletonSet(9)), singletonSet(21)) // Set of {3, 9, 21}
+      assert(forall(sp, (x: Int) => (x >= 0)), "All elements in sp are in fact non-negative")
+      assert(!forall(sn, (x: Int) => (x <= 0)), "There are positive elements in s")
+      assert(forall(ss, (x: Int) => (x % 3 == 0 && x > 0)), "Set `ss` consists of only elements divisable by three.")
+  }
+
+  test("exists asserts there exist element with specific predicate") {
+    new TestSets:
+      val sp = (x: Int) => (x >= 0) // Set of all non-negative integers
+      assert(exists(sp, (x:Int) => (x % 2 == 0)), "There exist even numbers in `sp`")
+      assert(exists(sp, (x: Int) => (x <= 0)), "There are non-positive elements") 
+      assert(!exists(sp, (x: Int) => (x < 0)), "But there are no negative elements.")
+  }
+
+  test("map applies a function to all set elements") {
+    new TestSets:
+      val sp = union(s2, s3)
+      val sm = map(sp, (x: Int) => (x * x)) // Map x -> x^2
+      assert(!contains(sm, 2) && contains(sm, 4), "Mapped set contains 2^2 but not 2.")
+      assert(!contains(sm, 3) && contains(sm, 9), "Mapped set contains 3^2 but not 3.")
+      assert(!contains(sm, 7), "Mapped set does not contain an element outside of sp.") 
+  }
+
+
 
   import scala.concurrent.duration.*
   override val munitTimeout = 10.seconds
